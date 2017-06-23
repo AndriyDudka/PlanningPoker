@@ -1,4 +1,4 @@
-﻿@model List<PlanningPoker.Models.Card>
+﻿@model PlanningPoker.ViewModels.CardViewModel
 @{
     ViewBag.Title = "Index";
 }
@@ -6,27 +6,33 @@
 <h2>Cards</h2>
 
 <br/>
-@Html.ActionLink("Add Card", "Create")
+@using (Html.BeginForm("CardResult", "Card"))
+{
+    <div>
+        <div class="form-group">
+            <label class="control-label col-sm-2">Choose card</label>
+            <select name="card" class="form-control">
+                @foreach (var i in Model.Cards)
+                {
+                    <option value="@i.Name">@i.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2">Choose mark</label>
+            <select name="mark" class="form-control">
+                @foreach (var i in Model.Marks)
+                {
+                    <option value="@i.mark">@i.mark</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" name="submit" value="See resoult" class="btn btn-default"/>
+            <input type="submit" name="edit" value="Add card" class="btn btn-default"/>
+        </div>
+    </div>
+}
 
-<br/>
-<div>
-    <table border ="1">
-        <tr>
-            <td>Id</td>
-            <td>Name</td>
-            <td>Action</td>
-            <td></td>
-        </tr>
-        @foreach (var i in Model)
-        {
-            <tr>
-                <td>@i.Id</td>
-                <td>@i.Name</td>
-                <td>Voice</td>
-                <td>@Html.ActionLink("Delete Card", "Delete", new {id = i.Id})</td>
-            </tr>
-        }
-    </table>
-</div>
 
 

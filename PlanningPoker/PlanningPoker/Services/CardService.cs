@@ -15,10 +15,10 @@ namespace PlanningPoker.Services
             if (cards == null)
             cards = new List<Card>
             {
-                new Card{Id = 1, Name = "name1"},
-                new Card{Id = 2, Name = "name2"},
-                new Card{Id = 3, Name = "name3"},
-                new Card{Id = 4, Name = "name4"}
+                new Card{Name = "name1"},
+                new Card{Name = "name2"},
+                new Card{Name = "name3"},
+                new Card{Name = "name4"}
             };
         }
 
@@ -27,9 +27,9 @@ namespace PlanningPoker.Services
             return cards;
         }
 
-        public Card GetById(int id)
+        public Card GetById(string name)
         {
-            return cards.FirstOrDefault(x => x.Id.Equals(id));
+            return cards.FirstOrDefault(x => x.Name.Equals(name));
         }
 
         public void AddCard(Card card)
@@ -37,9 +37,9 @@ namespace PlanningPoker.Services
             cards.Add(card);
         }
 
-        public void DeleteCard(int id)
+        public void DeleteCard(string name)
         {
-            cards.Remove(cards.FirstOrDefault(x => x.Id.Equals(id)));
+            cards.Remove(cards.FirstOrDefault(x => x.Name.Equals(name)));
         }
     }
 }

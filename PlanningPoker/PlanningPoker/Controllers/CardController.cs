@@ -5,24 +5,41 @@ using System.Web;
 using System.Web.Mvc;
 using PlanningPoker.Models;
 using PlanningPoker.Services;
+using PlanningPoker.ViewModels;
 
 namespace PlanningPoker.Controllers
 {
     public class CardController : Controller
     {
-        private  CardService cardService;
+        private CardViewModel _cardViewModel;
+        private CardService _cardService;
+        private ScaleService _scaleService;
 
         public CardController()
         {
-            cardService = new CardService();
+            _scaleService = new ScaleService();
+            _cardService = new CardService();
+            _cardViewModel = new CardViewModel();
+            
         }
 
         // GET: /Card/Index
         public ActionResult Index()
         {
-            var items = cardService.GetCards();
+            _cardViewModel.Cards = _cardService.GetCards();
+            _cardViewModel.Marks = _scaleService.GetMarks();
+            var items = _cardViewModel;
             return View(items);
 
+        }
+
+        // POST: /Card/CardResult
+        [HttpPost]
+        public ActionResult CardResult(string card, string mark, string submit)
+        {
+            Card _card = new Card();
+            _card.Name = card;
+            return String.IsNullOrEmpty(submit) ? View("Create") : View(_card);
         }
 
         public ActionResult Create()
@@ -36,7 +53,7 @@ namespace PlanningPoker.Controllers
         {
             if (ModelState.IsValid)
             {
-                cardService.AddCard(model);
+                _cardService.AddCard(model);
                 return RedirectToAction("Index");
             }
             else
@@ -45,16 +62,16 @@ namespace PlanningPoker.Controllers
             }
         }
 
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string name)
         {
-            return View(cardService.GetById(id));
+            return View(_cardService.GetById(name));
         }
 
         [HttpPost]
         [ActionName("Delete")]
-        public ActionResult DeleteConfirm(int id)
+        public ActionResult DeleteConfirm(string name)
         {
-            cardService.DeleteCard(id);
+            _cardService.DeleteCard(name);
             return RedirectToAction("Index");
         }
     }

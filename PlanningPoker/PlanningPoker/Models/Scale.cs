@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
 namespace PlanningPoker.Models
 {
-    public class Card
+    public class Scale
     {
-        [Required]
-        public string Name { get; set; }
+        public string mark { get; set; }
     }
 }

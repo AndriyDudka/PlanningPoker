@@ -147,8 +147,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Card.cs" />
+    <Compile Include="Models\Scale.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CardService.cs" />
+    <Compile Include="Services\ScaleService.cs" />
+    <Compile Include="ViewModels\CardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -190,6 +193,7 @@
     <Content Include="Views\Card\Index.cshtml" />
     <Content Include="Views\Card\Create.cshtml" />
     <Content Include="Views\Card\Delete.cshtml" />
+    <Content Include="Views\Card\CardResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
