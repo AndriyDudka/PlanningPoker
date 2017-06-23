@@ -8,10 +8,11 @@ namespace PlanningPoker.Services
 {
     public class CardService
     {
-        private List<Card> cards;
+        private static List<Card> cards;
 
         public CardService()
         {
+            if (cards == null)
             cards = new List<Card>
             {
                 new Card{Id = 1, Name = "name1"},
@@ -26,14 +27,19 @@ namespace PlanningPoker.Services
             return cards;
         }
 
+        public Card GetById(int id)
+        {
+            return cards.FirstOrDefault(x => x.Id.Equals(id));
+        }
+
         public void AddCard(Card card)
         {
             cards.Add(card);
         }
 
-        public void DeleteCard(string name)
+        public void DeleteCard(int id)
         {
-            cards.Remove(cards.FirstOrDefault(x => x.Name.Equals(name)));
+            cards.Remove(cards.FirstOrDefault(x => x.Id.Equals(id)));
         }
     }
 }
