@@ -10,17 +10,30 @@
         var socket = this.socket = new WebSocket(uri);
 
         socket.onopen = function () {
-            $('#cards').append($('<p>', {class: 'card', text: "X"}));
+
             callback();
         }
 
-        socket.onmessage = function(msg) {
-            $('#card').append($('<p>', { text: msg.data }));
+        socket.onmessage = function (msg) {
+            var client = JSON.parse(msg.data);
+            $('#cards').append($('<span>', { class: 'card', text: "X" }));
+            var count = Number(msg.data);
+            count = 1;
+            if (count < 1)
+                $('#hideShow').css(display, block);
+            paintCards(count);
         }
+
     }
 
     proto.sendMessage = function (msg) {     
         this.socket.send(msg);
+    }
+
+    paintCards = function (count) {       
+        for (var i = 0; i < count; i++) {
+            $('#cards').append($('<span>', { class: 'card', text: "X" }));
+        }
     }
 
     return Client;

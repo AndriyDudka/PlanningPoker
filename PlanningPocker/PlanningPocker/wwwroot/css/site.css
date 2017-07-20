@@ -36,9 +36,18 @@ textarea {
     }
 }
 
+#cards {
+    margin-bottom: 10px;
+}
+
 .card{
-    width: 50px;
-    border: 1px solid black;
-    padding: 5px;
-    font-size: 400%;
+    width: 60px;
+    border: 2px solid black;
+    padding: 10px;
+    margin: 10px;
+    font-size: 500%;
+}
+
+#hideShow {
+    display: none;
 }
