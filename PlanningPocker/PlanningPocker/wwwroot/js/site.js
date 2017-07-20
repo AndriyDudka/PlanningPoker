@@ -9,8 +9,8 @@
         var uri = this.uri;
         var socket = this.socket = new WebSocket(uri);
 
-        socket.onopen = function() {
-            $('#card').append($('<p>', { text: "connected" }));
+        socket.onopen = function () {
+            $('#cards').append($('<p>', {class: 'card', text: "X"}));
             callback();
         }
 

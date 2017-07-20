@@ -1,14 +1,21 @@
-﻿@{
+﻿@model PlanningPocker.Services.CardService
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div id="card"></div>
-<div>
-    <label>Choose mark</label>
-    <select>
-        <option value="0">0</option>
-        <option value="1">1</option>
-    </select>
-    <input type="button" value="To vote" />
-    <input type="button" value="Reset"/>
+<div id="cards">
 </div>
+<form class="form-inline">
+    <div class="form-group">
+        <label class="control-label">Choose mark</label>
+        <select class="form-control">
+            @foreach (var card in Model.card)
+            {
+                <option value=@card.CardName>@card.CardName</option>
+            }
+        </select>
+    </div>
+    <input type="button" value="Vote" class="btn btn-default" />
+    <input type="button" value="Reset" class="btn btn-default" />
+</form>

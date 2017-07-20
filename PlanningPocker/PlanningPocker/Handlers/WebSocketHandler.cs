@@ -26,6 +26,7 @@ namespace PlanningPocker.Handlers
             {
                 var incoming = await this.socket.ReceiveAsync(seg, CancellationToken.None);
                 var outgoing = new ArraySegment<byte>(buffer, 0, incoming.Count);
+                Console.WriteLine(outgoing);
                 await this.socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
