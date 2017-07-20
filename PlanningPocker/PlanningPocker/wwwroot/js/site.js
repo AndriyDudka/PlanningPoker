@@ -10,18 +10,19 @@
         var socket = this.socket = new WebSocket(uri);
 
         socket.onopen = function () {
-
             callback();
         }
+  
+        
 
-        socket.onmessage = function (msg) {
-            var client = JSON.parse(msg.data);
-            $('#cards').append($('<span>', { class: 'card', text: "X" }));
-            var count = Number(msg.data);
-            count = 1;
-            if (count < 1)
-                $('#hideShow').css(display, block);
-            paintCards(count);
+        socket.onmessage = function (msg) {          
+            //var client = JSON.parse(msg.data);
+            $('#cards').append($('<span>', { class: 'card', text: msg.data }));
+
+            var count = Number(msg.data);     
+           // if (count < 1)
+               // $('#reset').css(display, block);
+         //   paintCards(count);
         }
 
     }
@@ -43,4 +44,8 @@ var client = new WebSocketClient({
     uri: "ws://" + window.location.host + "/ws"
 });
 
-client.connect(function(){client.sendMessage("Hello. Its me!")});
+client.connect(function () { client.sendMessage("First!") });
+
+$('#Vote').click(function() {
+    client.sendMessage("some Message");
+});
