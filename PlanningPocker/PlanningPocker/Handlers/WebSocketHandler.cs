@@ -39,15 +39,10 @@ namespace PlanningPocker.Handlers
                     var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
                     await socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
                 }
-            }
-
-            for (int i = 0; i < sockets.Count - 1; i++)
-            {
-                var buffer = new byte[BufferSize];
-                var str = "X";
-                buffer = Encoding.ASCII.GetBytes(str);
-                var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
-                await socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
+                else
+                {
+                    sockets.Remove(sockets[i]);
+                }
             }
         }
 

@@ -9,7 +9,7 @@
 <form class="form-inline">
     <div class="form-group">
         <label class="control-label">Choose mark</label>
-        <select class="form-control">
+        <select id ="mark" class="form-control">
             @foreach (var card in Model.card)
             {
                 <option value=@card.CardName>@card.CardName</option>

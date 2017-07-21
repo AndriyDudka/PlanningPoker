@@ -46,6 +46,7 @@ var client = new WebSocketClient({
 
 client.connect(function () { client.sendMessage("First!") });
 
-$('#Vote').click(function() {
-    client.sendMessage("some Message");
+$('#Vote').click(function () {
+    var mark = $('#mark option:selected').text();
+    client.sendMessage({});
 });
