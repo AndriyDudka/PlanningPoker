@@ -24,7 +24,7 @@
             if (msg.data === "clean") {
                 $('#cards').empty();
             } else {
-
+                if (msg.data !== "X") $('#reset').show();
                 $('#cards').append($('<span>', { class: 'card', text: msg.data }));   
             }
         
