@@ -7,6 +7,7 @@ namespace PlanningPocker.Models
 {
     public class Client
     {
+        public int Id { get; set; }
         public bool Front { get; set; }
         public string Mark { get; set; }
     }

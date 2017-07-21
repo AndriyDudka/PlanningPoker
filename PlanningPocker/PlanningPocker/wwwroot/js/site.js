@@ -20,13 +20,20 @@
             });
         }
 
-        socket.onmessage = function (msg) {      
-            $('#cards').append($('<span>', { class: 'card', text: msg.data }));           
+        socket.onmessage = function (msg) {   
+            if (msg.data === "clean") {
+                $('#cards').empty();
+            } else {
+
+                $('#cards').append($('<span>', { class: 'card', text: msg.data }));   
+            }
+        
         }
     }
 
-    proto.sendMessage = function (msg) {     
-        this.socket.send(msg);
+    proto.sendMessage = function (msg) {
+        var str = JSON.stringify(msg);
+        this.socket.send(str);
     }
 
     return Client;
@@ -48,3 +55,5 @@ $('#Vote').click(function () {
         mark: mark
     });
 });
+
+

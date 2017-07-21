@@ -13,12 +13,13 @@ namespace PlanningPocker.Services
 
         public WebSocket Socket { get; set; }
 
-        public ClientService(WebSocket socket)
+        public ClientService(WebSocket socket, int id)
         {
             this.Socket = socket;
 
             Client = new Client
             {
+                Id = id,
                 Front = false,
                 Mark = "X"
             };
