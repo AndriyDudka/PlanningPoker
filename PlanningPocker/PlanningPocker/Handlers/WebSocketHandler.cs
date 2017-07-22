@@ -45,6 +45,8 @@ namespace PlanningPocker.Handlers
                         break;
                     case "Close": CloseConnection(current);
                         break;
+                    case "Reset": Reset();
+                        break;
                 }
             }
         }
@@ -86,9 +88,13 @@ namespace PlanningPocker.Handlers
                     break;
                 }
             }
+            ShowCards();
+        }
 
+        public void ShowCards()
+        {
             for (int i = 0; i < sockets.Count; i++)
-                if(sockets[i].Client.Mark == "X") return;
+                if (sockets[i].Client.Mark == "X") return;
 
             for (int i = 0; i < sockets.Count; i++)
                 sockets[i].Client.Front = true;
@@ -103,6 +109,15 @@ namespace PlanningPocker.Handlers
                     sockets.Remove(sockets[i]);
                     break;
                 }         
+        }
+
+        public void Reset()
+        {
+            for (int i = 0; i < sockets.Count; i++)
+            {
+                sockets[i].Client.Mark = "X";
+            }
+            AddNewClient(false);
         }
 
         static async Task Acceptor(HttpContext hc, Func<Task> fake)

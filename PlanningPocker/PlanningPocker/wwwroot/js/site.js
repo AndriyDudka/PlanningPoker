@@ -43,16 +43,25 @@ var client = new WebSocketClient({
     uri: "ws://" + window.location.host + "/ws"
 });
 
-client.connect(function () { client.sendMessage({
-    status: "New Client",
-    mark:""
-}) });
+client.connect(() => {
+    client.sendMessage({
+        status: "New Client",
+        mark: ""
+    })
+});
 
-$('#Vote').click(function () {
+$('#Vote').click(() => {
     var mark = $('#mark option:selected').text();
     client.sendMessage({
         status: "Vote",
         mark: mark
+    });
+});
+
+$('#reset').click(() => {
+    client.sendMessage({
+        status: "Reset",
+        mark: ""
     });
 });
 
