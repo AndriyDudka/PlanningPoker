@@ -28,6 +28,7 @@ namespace PlanningPocker.Handlers
 
         async Task Message()
         {
+            
             int current = id;
             var buffer = new byte[BufferSize];
             var seg = new ArraySegment<byte>(buffer);
@@ -37,9 +38,10 @@ namespace PlanningPocker.Handlers
                 var str = Encoding.ASCII.GetString(seg.Array, seg.Offset, incoming.Count);
                 ClientStatus clientStatus = JsonConvert.DeserializeObject<ClientStatus>(str);
 
+                if (clientStatus == null) CloseConnection(current);
                 switch (clientStatus.Status)
                 {
-                    case "New Client": AddNewClient(true);
+                    case "New Client": UpdateCards();
                         break;
                     case "Vote": Vote(clientStatus.Mark, current);
                         break;
@@ -51,73 +53,72 @@ namespace PlanningPocker.Handlers
             }
         }
 
-        public async Task AddNewClient(bool newClient)
+        async Task UpdateCards()
         {
             for (int i = 0; i < sockets.Count; i++)
             {
-                if (sockets[i].Socket.State == WebSocketState.Open)
+
+                var buffer = new byte[BufferSize];
+                var str = "clean";
+                buffer = Encoding.ASCII.GetBytes(str);
+                var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
+                await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
+                for (int j = 0; j < sockets.Count; j++)
                 {
-                    var buffer = new byte[BufferSize];
-                    var str = "clean";
+                    str = sockets[j].Client.Mark;
+                    if (!sockets[i].Client.Front || !sockets[j].Client.Front) str = "X";
                     buffer = Encoding.ASCII.GetBytes(str);
-                    var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
+                    outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
                     await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
-                    for (int j = 0; j < sockets.Count; j++)
-                    {                                           
-                        str = sockets[j].Client.Mark;
-                        if ((i == sockets.Count - 1 && newClient) || !sockets[j].Client.Front) str = "X";
-                        buffer = Encoding.ASCII.GetBytes(str);
-                        outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
-                        await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);                    
-                    }                  
-                }
-                else
-                {
-                    sockets.Remove(sockets[i]);
                 }
             }
         }
 
-        public void Vote(string mark, int id)
+        async Task Vote(string mark, int id)
         {
             for (int i = 0; i < sockets.Count; i++)
+                if (sockets[i].Client.Front) return;
+
+            for (int i = 0; i < sockets.Count; i++)
+            if (sockets[i].Client.Id == id)
             {
-                if (sockets[i].Client.Id == id)
-                {
-                    sockets[i].Client.Mark = mark;
-                    break;
-                }
+                sockets[i].Client.Mark = mark;
+                break;
             }
-            ShowCards();
+            
+            await ShowCards();
         }
 
-        public void ShowCards()
+        async Task ShowCards()
         {
             for (int i = 0; i < sockets.Count; i++)
                 if (sockets[i].Client.Mark == "X") return;
 
             for (int i = 0; i < sockets.Count; i++)
                 sockets[i].Client.Front = true;
-            AddNewClient(false);
+            await UpdateCards();
         }
 
-        public void CloseConnection(int id)
+        async Task CloseConnection(int id)
         {
             for (int i = 0; i < sockets.Count; i++)
                 if (sockets[i].Client.Id == id)
                 {
                     sockets.Remove(sockets[i]);
                     break;
-                }         
+                }
+            await UpdateCards();
+            await ShowCards();
         }
 
-        public void Reset()
+        async Task Reset()
         {
             for (int i = 0; i < sockets.Count; i++)
             {
                 sockets[i].Client.Mark = "X";
+                sockets[i].Client.Front = false;
             }
-            AddNewClient(false);
+            await UpdateCards();
         }
 
         static async Task Acceptor(HttpContext hc, Func<Task> fake)

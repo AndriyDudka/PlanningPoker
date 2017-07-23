@@ -9,15 +9,18 @@
         var uri = this.uri;
         var socket = this.socket = new WebSocket(uri);
 
-        socket.onopen = function() {
-            callback();
+        socket.onopen = function () {
+            
+           callback();
         }
   
-        socket.onclose = function() {
-            this.sendMessage({
+        socket.onclose = function () {         
+            var str = JSON.stringify({
                 status: "Close",
                 mark: ""
             });
+            //чомусь передається пуста строка!
+            this.send(str);
         }
 
         socket.onmessage = function (msg) {   
