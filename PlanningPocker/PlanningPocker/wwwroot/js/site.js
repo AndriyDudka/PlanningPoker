@@ -23,12 +23,19 @@
             this.send(str);
         }
 
-        socket.onmessage = function (msg) {   
-            if (msg.data === "clean") {
+        socket.onmessage = function (msg) {
+            var clientResponse = JSON.parse(msg.data);
+
+            if (clientResponse.Clean === true) {
                 $('#cards').empty();
             } else {
-                if (msg.data !== "X") $('#reset').show();
-                $('#cards').append($('<span>', { class: 'card', text: msg.data }));   
+                if (clientResponse.Mark !== "X") $('#reset').show();
+
+                var $div = $('<div>', { class: 'client panel panel-success' });
+                $div.append($('<div>', { class: 'client-name panel-heading', text: clientResponse.Name }));
+                $div.append($('<div>', { class: 'client-card panel-body', text: clientResponse.Mark }));
+
+                $('#cards').append($div);   
             }
         
         }
@@ -46,8 +53,15 @@ var client = new WebSocketClient({
     uri: "ws://" + window.location.host + "/ws"
 });
 
+do {
+    var name = prompt("Input your name", "Vasia Pupkin");
+} while (name === "null");
+
+client.name = name;
+
 client.connect(() => {
     client.sendMessage({
+        name: this.name,
         status: "New Client",
         mark: ""
     })

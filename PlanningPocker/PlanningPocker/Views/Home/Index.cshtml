@@ -6,16 +6,18 @@
 
 <div id="cards">
 </div>
-<form class="form-inline">
-    <div class="form-group">
-        <label class="control-label">Choose mark</label>
-        <select id ="mark" class="form-control">
-            @foreach (var card in Model.card)
+<div>
+    <form class="form-inline">
+        <div class="form-group">
+            <label class="control-label">Choose mark</label>
+            <select id="mark" class="form-control">
+                @foreach (var card in Model.card)
             {
-                <option value=@card.CardName>@card.CardName</option>
-            }
-        </select>
-    </div>
-    <input id="Vote" type="button" value="Vote" class="btn btn-default" />
-    <input id="reset" type="button" value="Reset" class="btn btn-default"/>
-</form>
+                    <option value=@card.CardName>@card.CardName</option>
+                }
+            </select>
+        </div>
+        <input id="Vote" type="button" value="Vote" class="btn btn-default" />
+        <input id="reset" type="button" value="Reset" class="btn btn-default" />
+    </form>
+</div>

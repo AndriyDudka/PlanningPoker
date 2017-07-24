@@ -37,14 +37,26 @@ textarea {
 }
 
 #cards {
-    margin-bottom: 10px;
+    height: 350px;
 }
 
-.card{
-    width: 60px;
-    border: 2px solid black;
-    padding: 10px;
-    margin: 10px;
+.client {
+    float: left;
+    margin-right: 10px;
+}
+
+.client-name {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 200%;
+}
+
+.client-card {
+    width: 200px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 500%;
 }
 

@@ -36,14 +36,18 @@ namespace PlanningPocker.Handlers
             {              
                 var incoming = await this.socket.ReceiveAsync(seg, CancellationToken.None);
                 var str = Encoding.ASCII.GetString(seg.Array, seg.Offset, incoming.Count);
-                ClientStatus clientStatus = JsonConvert.DeserializeObject<ClientStatus>(str);
+                ClientRequest clientRequest = JsonConvert.DeserializeObject<ClientRequest>(str);
 
-                if (clientStatus == null) CloseConnection(current);
-                switch (clientStatus.Status)
+                if (clientRequest == null) CloseConnection(current);
+                switch (clientRequest.Status)
                 {
-                    case "New Client": UpdateCards();
+                    case "New Client":
+                        {
+                            sockets[sockets.Count - 1].Client.Name = clientRequest.Name;
+                            UpdateCards();
+                        }
                         break;
-                    case "Vote": Vote(clientStatus.Mark, current);
+                    case "Vote": Vote(clientRequest.Mark, current);
                         break;
                     case "Close": CloseConnection(current);
                         break;
@@ -57,16 +61,27 @@ namespace PlanningPocker.Handlers
         {
             for (int i = 0; i < sockets.Count; i++)
             {
-
+                ClientResponse clientResponse = new ClientResponse
+                {
+                    Name = "",
+                    Mark = "",
+                    Clean = true
+                };
+                var str = JsonConvert.SerializeObject(clientResponse);
                 var buffer = new byte[BufferSize];
-                var str = "clean";
                 buffer = Encoding.ASCII.GetBytes(str);
                 var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
                 await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
                 for (int j = 0; j < sockets.Count; j++)
                 {
-                    str = sockets[j].Client.Mark;
-                    if (!sockets[i].Client.Front || !sockets[j].Client.Front) str = "X";
+                    clientResponse = new ClientResponse
+                    {
+                        Name = sockets[j].Client.Name,
+                        Mark = sockets[j].Client.Mark,
+                        Clean = false
+                    };
+                    if (!sockets[i].Client.Front || !sockets[j].Client.Front) clientResponse.Mark = "X";
+                    str = JsonConvert.SerializeObject(clientResponse);                   
                     buffer = Encoding.ASCII.GetBytes(str);
                     outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
                     await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
@@ -137,13 +152,23 @@ namespace PlanningPocker.Handlers
             app.Use(WebSocketHandler.Acceptor);
         }
 
-        public class ClientStatus
+        public class ClientRequest
         {
+            [JsonProperty("name")]
+            public string Name { get; set; }
+
             [JsonProperty("status")]
             public string Status { get; set; }
 
             [JsonProperty("mark")]
             public string Mark { get; set; }
+        }
+
+        class ClientResponse
+        {
+            public string Name { get; set; }
+            public string Mark { get; set; }
+            public bool Clean { get; set; }
         }
     }
 }

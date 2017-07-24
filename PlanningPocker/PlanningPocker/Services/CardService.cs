@@ -21,9 +21,9 @@ namespace PlanningPocker.Services
             new Card {CardName = "20"},
             new Card {CardName = "40"},
             new Card {CardName = "100"},
-            new Card {CardName = "∞"},
+            new Card {CardName = "infinity"},
             new Card {CardName = "?"},
-            new Card {CardName = "cofee"}
+            new Card {CardName = "coffee"}
         };
     }
 }
