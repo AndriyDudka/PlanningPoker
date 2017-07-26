@@ -24,20 +24,19 @@
         }
 
         socket.onmessage = function (msg) {
-            var clientResponse = JSON.parse(msg.data);
+            var response = JSON.parse(msg.data);
+            $('#cards').empty();
 
-            if (clientResponse.Clean === true) {
-                $('#cards').empty();
-            } else {
-                if (clientResponse.Mark !== "X") $('#reset').show();
+            for (var i = 0; i < response.length; i++)
+            {
+                if (response[i].Mark !== "X") $('#reset').show();
 
                 var $div = $('<div>', { class: 'client panel panel-success' });
-                $div.append($('<div>', { class: 'client-name panel-heading', text: clientResponse.Name }));
-                $div.append($('<div>', { class: 'client-card panel-body', text: clientResponse.Mark }));
+                $div.append($('<div>', { class: 'client-name panel-heading', text: response[i].Name }));
+                $div.append($('<div>', { class: 'client-card panel-body', text: response[i].Mark }));
 
                 $('#cards').append($div);   
-            }
-        
+            }              
         }
     }
 

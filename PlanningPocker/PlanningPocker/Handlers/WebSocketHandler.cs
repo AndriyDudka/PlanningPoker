@@ -61,31 +61,22 @@ namespace PlanningPocker.Handlers
         {
             for (int i = 0; i < sockets.Count; i++)
             {
-                ClientResponse clientResponse = new ClientResponse
+                List<ClientResponse> clientResponses = new List<ClientResponse>();
+                for(int j = 0; j < sockets.Count; j++)
                 {
-                    Name = "",
-                    Mark = "",
-                    Clean = true
-                };
-                var str = JsonConvert.SerializeObject(clientResponse);
-                var buffer = new byte[BufferSize];
-                buffer = Encoding.ASCII.GetBytes(str);
-                var outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
-                await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
-                for (int j = 0; j < sockets.Count; j++)
-                {
-                    clientResponse = new ClientResponse
+                    ClientResponse client = new ClientResponse
                     {
                         Name = sockets[j].Client.Name,
-                        Mark = sockets[j].Client.Mark,
-                        Clean = false
+                        Mark = sockets[j].Client.Mark
                     };
-                    if (!sockets[i].Client.Front || !sockets[j].Client.Front) clientResponse.Mark = "X";
-                    str = JsonConvert.SerializeObject(clientResponse);                   
-                    buffer = Encoding.ASCII.GetBytes(str);
-                    outgoing = new ArraySegment<byte>(buffer, 0, str.Length);
-                    await sockets[i].Socket.SendAsync(outgoing, WebSocketMessageType.Text, true, CancellationToken.None);
+                    clientResponses.Add(client);
                 }
+
+                var str = JsonConvert.SerializeObject(clientResponses);
+                var bufer = new byte[BufferSize];
+                bufer = Encoding.ASCII.GetBytes(str);
+                var response = new ArraySegment<byte>(bufer, 0, str.Length);
+                await sockets[i].Socket.SendAsync(response, WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
 
@@ -168,7 +159,6 @@ namespace PlanningPocker.Handlers
         {
             public string Name { get; set; }
             public string Mark { get; set; }
-            public bool Clean { get; set; }
         }
     }
 }
