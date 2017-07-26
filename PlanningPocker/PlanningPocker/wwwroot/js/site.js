@@ -25,7 +25,7 @@
 
         socket.onmessage = function (msg) {
             var response = JSON.parse(msg.data);
-            $('#cards').empty();
+            $('.grid-row1').empty();
 
             for (var i = 0; i < response.length; i++)
             {
@@ -35,7 +35,7 @@
                 $div.append($('<div>', { class: 'client-name panel-heading', text: response[i].Name }));
                 $div.append($('<div>', { class: 'client-card panel-body', text: response[i].Mark }));
 
-                $('#cards').append($div);   
+                $('.grid-row1').append($div);   
             }              
         }
     }
