@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using PlanningPocker.Services;
+using PlanningPocker.Models;
+using static PlanningPocker.Models.ObjectResponse;
 
 namespace PlanningPocker.Handlers
 {
@@ -61,18 +63,20 @@ namespace PlanningPocker.Handlers
         {
             for (int i = 0; i < sockets.Count; i++)
             {
-                List<ClientResponse> clientResponses = new List<ClientResponse>();
-                for(int j = 0; j < sockets.Count; j++)
+                ObjectResponse objectResponse = new ObjectResponse();
+                objectResponse.VoteEnabled = sockets[i].Client.Front;
+                List<ClientResponse> clientsResponse = new List<ClientResponse>();
+                foreach (var socket in sockets)
                 {
                     ClientResponse client = new ClientResponse
                     {
-                        Name = sockets[j].Client.Name,
-                        Mark = sockets[j].Client.Mark
+                        Name = socket.Client.Name,
+                        Mark = socket.Client.Mark
                     };
-                    clientResponses.Add(client);
+                    clientsResponse.Add(client);
                 }
-
-                var str = JsonConvert.SerializeObject(clientResponses);
+                objectResponse.clientsResponse = clientsResponse;
+                var str = JsonConvert.SerializeObject(objectResponse);
                 var bufer = new byte[BufferSize];
                 bufer = Encoding.ASCII.GetBytes(str);
                 var response = new ArraySegment<byte>(bufer, 0, str.Length);
@@ -155,10 +159,6 @@ namespace PlanningPocker.Handlers
             public string Mark { get; set; }
         }
 
-        class ClientResponse
-        {
-            public string Name { get; set; }
-            public string Mark { get; set; }
-        }
+        
     }
 }
