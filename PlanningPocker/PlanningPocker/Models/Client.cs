@@ -11,5 +11,7 @@ namespace PlanningPocker.Models
         public string Name { get; set; }
         public bool Front { get; set; }
         public string Mark { get; set; }
+        public bool VoteEnabled { get; set; }
+        public bool ResetShow { get; set; }
     }
 }

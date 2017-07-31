@@ -25,18 +25,28 @@
 
         socket.onmessage = function (msg) {
             var response = JSON.parse(msg.data);
+            var arr = response.ClientsResponse;
+
             $('.grid-row1').empty();
-
-            for (var i = 0; i < response.length; i++)
-            {
-                if (response[i].Mark !== "X") $('#reset').show();
-
+            if (response.VoteEnabled === false) $('#vote').attr('disabled', true);
+            else $('#vote').removeAttr('disabled');
+            if (response.ResetShow === true) $('#reset').show();
+            arr.forEach(function (socket, i, arr) {             
                 var $div = $('<div>', { class: 'client panel panel-success' });
-                $div.append($('<div>', { class: 'client-name panel-heading', text: response[i].Name }));
-                $div.append($('<div>', { class: 'client-card panel-body', text: response[i].Mark }));
+                var name = socket.Name;
+                if (name.length > 10) name = name.substr(0, 10) + "...";
+                $div.append($('<div>', {
+                    class: 'client-name panel-heading',
+                    text: name,
+                    title: socket.Name
+                }));
+                $div.append($('<div>', {
+                    class: 'client-card panel-body',
+                    text: socket.Mark
+                }));
 
-                $('.grid-row1').append($div);   
-            }              
+                $('.grid-row1').append($div);
+            });                      
         }
     }
 
@@ -53,7 +63,7 @@ var client = new WebSocketClient({
 });
 
 do {
-    var name = prompt("Input your name", "Vasia Pupkin");
+    var name = prompt("Input your nickname", "Programmer");
 } while (name === "null");
 
 client.name = name;
@@ -66,7 +76,7 @@ client.connect(() => {
     })
 });
 
-$('#Vote').click(() => {
+$('#vote').click(() => {
     var mark = $('#mark option:selected').text();
     client.sendMessage({
         status: "Vote",

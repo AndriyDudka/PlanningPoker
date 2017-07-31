@@ -30,8 +30,8 @@ namespace PlanningPocker.Handlers
 
         async Task Message()
         {
-            
             int current = id;
+            if (current == 1) sockets[0].Client.ResetShow = true;
             var buffer = new byte[BufferSize];
             var seg = new ArraySegment<byte>(buffer);
             while (this.socket.State == WebSocketState.Open)
@@ -45,7 +45,9 @@ namespace PlanningPocker.Handlers
                 {
                     case "New Client":
                         {
-                            sockets[sockets.Count - 1].Client.Name = clientRequest.Name;
+                            var socket = sockets[sockets.Count - 1];
+                            socket.Client.Name = clientRequest.Name;
+                            socket.Client.VoteEnabled = sockets.Count < 2;
                             UpdateCards();
                         }
                         break;
@@ -61,26 +63,29 @@ namespace PlanningPocker.Handlers
 
         async Task UpdateCards()
         {
-            for (int i = 0; i < sockets.Count; i++)
+            List<ClientResponse> clientsResponse = new List<ClientResponse>();
+            ObjectResponse objResponse = new ObjectResponse();
+            var bufer = new byte[BufferSize];
+
+            foreach (var socket in sockets)
             {
-                ObjectResponse objectResponse = new ObjectResponse();
-                objectResponse.VoteEnabled = sockets[i].Client.Front;
-                List<ClientResponse> clientsResponse = new List<ClientResponse>();
-                foreach (var socket in sockets)
+                ClientResponse client = new ClientResponse
                 {
-                    ClientResponse client = new ClientResponse
-                    {
-                        Name = socket.Client.Name,
-                        Mark = socket.Client.Mark
-                    };
-                    clientsResponse.Add(client);
-                }
-                objectResponse.clientsResponse = clientsResponse;
-                var str = JsonConvert.SerializeObject(objectResponse);
-                var bufer = new byte[BufferSize];
+                    Name = socket.Client.Name,
+                    Mark = socket.Client.Front ? socket.Client.Mark : "X"
+                };
+                clientsResponse.Add(client);
+            }
+            objResponse.ClientsResponse = clientsResponse;
+            
+            foreach (var socket in sockets)
+            {              
+                objResponse.VoteEnabled = socket.Client.VoteEnabled;
+                objResponse.ResetShow = socket.Client.ResetShow;                                         
+                var str = JsonConvert.SerializeObject(objResponse);               
                 bufer = Encoding.ASCII.GetBytes(str);
                 var response = new ArraySegment<byte>(bufer, 0, str.Length);
-                await sockets[i].Socket.SendAsync(response, WebSocketMessageType.Text, true, CancellationToken.None);
+                await socket.Socket.SendAsync(response, WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
 
@@ -105,7 +110,11 @@ namespace PlanningPocker.Handlers
                 if (sockets[i].Client.Mark == "X") return;
 
             for (int i = 0; i < sockets.Count; i++)
+            {
                 sockets[i].Client.Front = true;
+                sockets[i].Client.VoteEnabled = false;
+            }
+                
             await UpdateCards();
         }
 
@@ -127,6 +136,8 @@ namespace PlanningPocker.Handlers
             {
                 sockets[i].Client.Mark = "X";
                 sockets[i].Client.Front = false;
+                sockets[i].Client.VoteEnabled = true;
+                sockets[i].Client.ResetShow = true;
             }
             await UpdateCards();
         }

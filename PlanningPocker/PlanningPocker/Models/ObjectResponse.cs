@@ -7,10 +7,11 @@ namespace PlanningPocker.Models
 {
     public class ObjectResponse
     {
-        public List<ClientResponse> clientsResponse { get; set; }
-
+        public List<ClientResponse> ClientsResponse { get; set; }
+   
         public bool VoteEnabled { get; set; }
 
+        public bool ResetShow { get; set; }
 
         public class ClientResponse
         {
