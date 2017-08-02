@@ -27,7 +27,7 @@
             var response = JSON.parse(msg.data);
             var arr = response.ClientsResponse;
 
-            $('.grid-row1').empty();
+            $('#card').empty();
             if (response.VoteEnabled === false) $('#vote').attr('disabled', true);
             else $('#vote').removeAttr('disabled');
             if (response.ResetShow === true) $('#reset').show();
@@ -45,7 +45,7 @@
                     text: socket.Mark
                 }));
 
-                $('.grid-row1').append($div);
+                $('#card').append($div);
             });                      
         }
     }

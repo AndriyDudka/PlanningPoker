@@ -4,21 +4,21 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="grid">
-    <div class="grid-row1">
+<div class="container">
+    <div class="row" id="card">
 
     </div>
-    <form class="form-inline grid-row2">
+    <form class="form-inline row">
         <div class="form-group">
-            <label class="control-label grid-row2-item1">Choose mark</label>
-            <select id="mark" class="form-control grid-row2-item2">
+            <label class="control-label col">Choose mark</label>
+            <select id="mark" class="form-control col">
                 @foreach (var card in Model.card)
-            {
+                {
                     <option value=@card.CardName>@card.CardName</option>
                 }
             </select>
         </div>
-        <input id="vote" type="button" value="Vote" class="btn btn-default grid-row2-item3" />
-        <input id="reset" type="button" value="Reset" class="btn btn-default grid-row2-item4" />
+        <input id="vote" type="button" value="Vote" class="btn btn-default col" />
+        <input id="reset" type="button" value="Reset" class="btn btn-default col" />
     </form>
 </div>

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using PlanningPocker.Services;
 using PlanningPocker.Models;
@@ -40,7 +39,7 @@ namespace PlanningPocker.Handlers
                 var str = Encoding.ASCII.GetString(seg.Array, seg.Offset, incoming.Count);
                 ClientRequest clientRequest = JsonConvert.DeserializeObject<ClientRequest>(str);
 
-                if (clientRequest == null) CloseConnection(current);
+                if (clientRequest == null) await CloseConnection(current);
                 switch (clientRequest.Status)
                 {
                     case "New Client":
@@ -48,14 +47,14 @@ namespace PlanningPocker.Handlers
                             var socket = sockets[sockets.Count - 1];
                             socket.Client.Name = clientRequest.Name;
                             socket.Client.VoteEnabled = sockets.Count < 2;
-                            UpdateCards();
+                            await UpdateCards();
                         }
                         break;
-                    case "Vote": Vote(clientRequest.Mark, current);
+                    case "Vote": await Vote(clientRequest.Mark, current);
                         break;
-                    case "Close": CloseConnection(current);
+                    case "Close": await CloseConnection(current);
                         break;
-                    case "Reset": Reset();
+                    case "Reset": await Reset();
                         break;
                 }
             }
@@ -81,7 +80,8 @@ namespace PlanningPocker.Handlers
             foreach (var socket in sockets)
             {              
                 objResponse.VoteEnabled = socket.Client.VoteEnabled;
-                objResponse.ResetShow = socket.Client.ResetShow;                                         
+                objResponse.ResetShow = socket.Client.ResetShow;
+                
                 var str = JsonConvert.SerializeObject(objResponse);               
                 bufer = Encoding.ASCII.GetBytes(str);
                 var response = new ArraySegment<byte>(bufer, 0, str.Length);
@@ -91,54 +91,44 @@ namespace PlanningPocker.Handlers
 
         async Task Vote(string mark, int id)
         {
-            for (int i = 0; i < sockets.Count; i++)
-                if (sockets[i].Client.Front) return;
+            foreach (var socket in sockets)
+                if (socket.Client.Front) return;
 
-            for (int i = 0; i < sockets.Count; i++)
-            if (sockets[i].Client.Id == id)
-            {
-                sockets[i].Client.Mark = mark;
-                break;
-            }
+            sockets.Find(x => x.Client.Id == id).Client.Mark = mark;
             
             await ShowCards();
         }
 
         async Task ShowCards()
         {
-            for (int i = 0; i < sockets.Count; i++)
-                if (sockets[i].Client.Mark == "X") return;
+            foreach (var socket in sockets)
+                if (socket.Client.Mark == "X") return;
 
-            for (int i = 0; i < sockets.Count; i++)
-            {
-                sockets[i].Client.Front = true;
-                sockets[i].Client.VoteEnabled = false;
-            }
+            sockets.ForEach(x =>
+                {
+                    x.Client.Front = true;
+                    x.Client.VoteEnabled = false;
+                });
                 
             await UpdateCards();
         }
 
         async Task CloseConnection(int id)
         {
-            for (int i = 0; i < sockets.Count; i++)
-                if (sockets[i].Client.Id == id)
-                {
-                    sockets.Remove(sockets[i]);
-                    break;
-                }
+            sockets.Remove(sockets.Find(x => x.Client.Id == id));         
             await UpdateCards();
             await ShowCards();
         }
 
         async Task Reset()
         {
-            for (int i = 0; i < sockets.Count; i++)
+            sockets.ForEach(x => 
             {
-                sockets[i].Client.Mark = "X";
-                sockets[i].Client.Front = false;
-                sockets[i].Client.VoteEnabled = true;
-                sockets[i].Client.ResetShow = true;
-            }
+                x.Client.Mark = "X";
+                x.Client.Front = false;
+                x.Client.VoteEnabled = x.Client.ResetShow = true;
+            });
+            
             await UpdateCards();
         }
 
